@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Piano Keyboard</title>
+    <style>
+        .keyboard {
+            display: flex;
+            justify-content: center;
+        }
+
+        .key {
+            display: inline-block;
+            width: 50px;
+            height: 200px;
+            border: 1px solid black;
+            margin: 5px;
+            text-align: center;
+            line-height: 200px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .white-key {
+            background-color: white;
+            border-bottom: 5px solid #eee;
+        }
+
+        .black-key {
+            background-color: black;
+            width: 30px;
+            height: 120px;
+            margin-top: -120px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .black-key:before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 60px;
+            background-color: black;
+            position: absolute;
+            top: -60px;
+        }
+
+        .black-key:active {
+            background-color: #666;
+        }
+
+        .key.active {
+            background-color: #ffff99; /* Light yellow */
+        }
+    </style>
+</head>
+<body>
+    <div class="keyboard">
+        <!-- Octave C2 to B2 -->
+        <!-- Add keys for C2 to B2 here -->
+
+        <!-- Octave C3 to B3 -->
+        <div class="key white-key" data-note="130.81">C3</div>
+        <div class="key black-key" data-note="138.59">C#</div>
+        <!-- Add more keys for C3 to B3 -->
+        <div class="key white-key" data-note="146.83">D</div>
+        <div class="key black-key" data-note="155.56">D#</div>
+        <div class="key white-key" data-note="164.81">E</div>
+        <div class="key white-key" data-note="174.61">F</div>
+        <div class="key black-key" data-note="185.00">F#</div>
+        <div class="key white-key" data-note="196.00">G</div>
+        <div class="key black-key" data-note="207.65">G#</div>
+        <div class="key white-key" data-note="220.00">A</div>
+        <div class="key black-key" data-note="233.08">A#</div>
+        <div class="key white-key" data-note="246.94">B</div>
+
+        <!-- Octave C4 to B4 -->
+        <div class="key white-key" data-note="261.63">C4</div>
+        <div class="key black-key" data-note="277.18">C#</div>
+        <!-- Add more keys for C4 to B4 -->
+        <div class="key white-key" data-note="293.66">D</div>
+        <div class="key black-key" data-note="311.13">D#</div>
+        <div class="key white-key" data-note="329.63">E</div>
+        <div class="key white-key" data-note="349.23">F</div>
+        <div class="key black-key" data-note="369.99">F#</div>
+        <div class="key white-key" data-note="392.00">G</div>
+        <div class="key black-key" data-note="415.30">G#</div>
+        <div class="key white-key" data-note="440.00">A</div>
+        <div class="key black-key" data-note="466.16">A#</div>
+        <div class="key white-key" data-note="493.88">B</div>
+
+        <!-- Octave C5 to B5 -->
+        <div class="key white-key" data-note="523.25">C5</div>
+        <div class="key black-key" data-note="554.37">C#</div>
+        <!-- Add more keys for C5 to B5 -->
+        <div class="key white-key" data-note="587.33">D</div>
+        <div class="key black-key" data-note="622.25">D#</div>
+        <div class="key white-key" data-note="659.25">E</div>
+        <div class="key white-key" data-note="698.46">F</div>
+        <div class="key black-key" data-note="739.99">F#</div>
+        <div class="key white-key" data-note="783.99">G</div>
+        <div class="key black-key" data-note="830.61">G#</div>
+        <div class="key white-key" data-note="880.00">A</div>
+        <div class="key black-key" data-note="932.33">A#</div>
+        <div class="key white-key" data-note="987.77">B</div>
+        <div class="key white-key" data-note="1046.50">C6</div>
+    </div>
+
+    <script>
+        // Function to play a note
+        function playNoteOnKeyDown(event) {
+            const frequency = parseFloat(event.target.dataset.note);
+            playNoteOn(frequency);
+        }
+
+        function playNoteOnKeyUp(event) {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                if (parseFloat(key.dataset.note) === parseFloat(event.target.dataset.note)) {
+                    key.classList.remove('active');
+                }
+            });
+        }
+
+        function playNoteOn(frequency) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'triangle'; // Use triangle wave
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+            oscillator.connect(audioContext.destination);
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+            }, 500); // Stop after 500ms
+        }
+
+        // Event listener for key press
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('mousedown', () => {
+                key.classList.add('active');
+                const frequency = parseFloat(key.getAttribute('data-note'));
+                playNoteOn(frequency);
+            });
+
+            key.addEventListener('mouseup', () => {
+                key.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'f') {
+                playNoteOn(261.63); // C4 note
+                const keys = document.querySelectorAll('.key');
+                keys.forEach(key => {
+                    if (parseFloat(key.dataset.note) === 261.63) {
+                        key.classList.add('active');
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('keyup', playNoteOnKeyUp);
+    </script>
+</body>
+</html>
